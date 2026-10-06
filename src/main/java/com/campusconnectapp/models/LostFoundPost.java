@@ -49,6 +49,9 @@ public class LostFoundPost {
     @OneToMany(mappedBy = "foundPost")
     private List<MatchCandidate> foundMatchCandidates;
 
+    @OneToMany(mappedBy = "post")
+    private List<PostImage> images;
+
 
     // No-argument constructor
     public LostFoundPost() {
@@ -59,7 +62,8 @@ public class LostFoundPost {
     public LostFoundPost(Long id, User user, String postType,
                          Category category, String title, String description,
                          Location location, String locationDetail,
-                         LocalDate dateOccurred, String status) {
+                         LocalDate dateOccurred, String status,
+                         List<PostImage> images) {
 
         this.id = id;
         this.user = user;
@@ -71,11 +75,11 @@ public class LostFoundPost {
         this.locationDetail = locationDetail;
         this.dateOccurred = dateOccurred;
         this.status = status;
+        this.images = images;
     }
 
 
     // Getters and Setters
-
     public Long getId() {
         return id;
     }
@@ -170,5 +174,13 @@ public class LostFoundPost {
 
     public void setFoundMatchCandidates(List<MatchCandidate> foundMatchCandidates) {
         this.foundMatchCandidates = foundMatchCandidates;
+    }
+
+    public List<PostImage> getImages() {
+        return images;
+    }
+
+    public void setImages(List<PostImage> images) {
+        this.images = images;
     }
 }

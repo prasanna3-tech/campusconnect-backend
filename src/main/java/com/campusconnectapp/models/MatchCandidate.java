@@ -3,6 +3,7 @@ package com.campusconnectapp.models;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "match_candidates")
@@ -25,6 +26,9 @@ public class MatchCandidate {
 
     @Column(name = "status", nullable = false, length = 20)
     private String status;
+
+    @Column(name = "created_at", nullable = false)
+    private LocalDateTime createdAt;
 
     @OneToOne(mappedBy = "matchCandidate")
     private Conversation conversation;
