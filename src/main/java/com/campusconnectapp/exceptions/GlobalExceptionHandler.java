@@ -1,5 +1,7 @@
 package com.campusconnectapp.exceptions;
 
+import com.campusconnectapp.exceptions.postExceptions.CategoryNotFoundException;
+import com.campusconnectapp.exceptions.postExceptions.LocationNotFoundException;
 import com.campusconnectapp.exceptions.userExceptions.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -86,5 +88,22 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(exception.getMessage());
+    }
+    @ExceptionHandler(CategoryNotFoundException.class)
+    public ResponseEntity<String> handleCategoryNotFound(
+            CategoryNotFoundException ex
+    ) {
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(ex.getMessage());
+    }
+
+    @ExceptionHandler(LocationNotFoundException.class)
+    public ResponseEntity<String> handleLocationNotFound(
+            LocationNotFoundException ex
+    ) {
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(ex.getMessage());
     }
 }
