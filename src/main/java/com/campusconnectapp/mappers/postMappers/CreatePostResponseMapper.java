@@ -27,4 +27,31 @@ public class CreatePostResponseMapper {
 
         return new CreatePostResponse(postId, candidateDtos);
     }
+
+    public List<CandidateDto> toCandidateDtos(
+            List<LostFoundPost> posts) {
+
+        return posts.stream()
+                .map(post -> new CandidateDto(
+                        post.getId(),
+                        post.getTitle(),
+                        post.getDescription(),
+                        post.getCategory().getId(),
+                        post.getLocation().getId(),
+                        post.getLocationDetail(),
+                        post.getDateOccurred()
+                ))
+                .toList();
+    }
+    public CandidateDto toCandidateDto(LostFoundPost post) {
+        return new CandidateDto(
+                post.getId(),
+                post.getTitle(),
+                post.getDescription(),
+                post.getCategory().getId(),
+                post.getLocation().getId(),
+                post.getLocationDetail(),
+                post.getDateOccurred()
+        );
+    }
 }

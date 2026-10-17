@@ -21,4 +21,5 @@ public interface LostFoundPostRepository
             LocalDate startDate,
             LocalDate endDate
     );
+    List<LostFoundPost> findAllByPostType(String postType);
 }
