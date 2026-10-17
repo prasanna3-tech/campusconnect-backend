@@ -6,7 +6,15 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "match_candidates")
+@Table(
+        name = "match_candidates",
+        uniqueConstraints = {
+                @UniqueConstraint(
+                        name = "uq_match_candidate_pair",
+                        columnNames = {"lost_post_id", "found_post_id"}
+                )
+        }
+)
 public class MatchCandidate {
 
     @Id
@@ -26,9 +34,6 @@ public class MatchCandidate {
 
     @Column(name = "status", nullable = false, length = 20)
     private String status;
-
-    @Column(name = "created_at", nullable = false)
-    private LocalDateTime createdAt;
 
     @OneToOne(mappedBy = "matchCandidate")
     private Conversation conversation;
