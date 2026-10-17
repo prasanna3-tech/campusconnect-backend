@@ -17,15 +17,15 @@ public class Message {
     private Conversation conversation;
 
     @ManyToOne
-    @JoinColumn(name = "sender_id", nullable = false)
+    @JoinColumn(name = "sender_id")
     private User sender;
 
     @Column(name = "content", nullable = false, columnDefinition = "TEXT")
     private String content;
 
-    @Column(name = "sent_at", nullable = false)
+    @Column(name = "sent_at", nullable = false,
+            insertable = false, updatable = false)
     private LocalDateTime sentAt;
-
 
     // No-argument constructor
     public Message() {
@@ -34,13 +34,13 @@ public class Message {
 
     // All-argument constructor
     public Message(Long id, Conversation conversation, User sender,
-                   String content, LocalDateTime sentAt) {
+                   String content) {
 
         this.id = id;
         this.conversation = conversation;
         this.sender = sender;
         this.content = content;
-        this.sentAt = sentAt;
+
     }
 
 
