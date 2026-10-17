@@ -3,6 +3,7 @@ package com.campusconnectapp.models;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -21,7 +22,7 @@ public class LostFoundPost {
     private String postType;
 
     @ManyToOne
-    @JoinColumn(name = "category_id", nullable = false)
+    @JoinColumn(name = "category_id")
     private Category category;
 
     @Column(name = "title", nullable = false, length = 150)
@@ -31,7 +32,7 @@ public class LostFoundPost {
     private String description;
 
     @ManyToOne
-    @JoinColumn(name = "location_id", nullable = false)
+    @JoinColumn(name = "location_id")
     private Location location;
 
     @Column(name = "location_detail", length = 255)
@@ -51,6 +52,14 @@ public class LostFoundPost {
 
     @OneToMany(mappedBy = "post")
     private List<PostImage> images;
+
+    @Column(
+            name = "created_at",
+            nullable = false,
+            insertable = false, //This tells Hibernate not to include this field in SQL INSERT statements.
+            updatable = false //This tells Hibernate not to include this field in SQL UPDATE statements.
+    )
+    private LocalDateTime createdAt; //we do not need to pass date , dbms genetates the data and time  .
 
 
     // No-argument constructor
@@ -158,6 +167,10 @@ public class LostFoundPost {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
     }
 
     public List<MatchCandidate> getLostMatchCandidates() {
