@@ -24,7 +24,7 @@ public class Message {
     private String content;
 
     @Column(name = "sent_at", nullable = false,
-            insertable = false, updatable = false)
+            insertable = false, updatable = false) //we do not need to send time
     private LocalDateTime sentAt;
 
     // No-argument constructor

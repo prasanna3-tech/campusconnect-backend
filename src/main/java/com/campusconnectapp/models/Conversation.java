@@ -81,7 +81,7 @@ public class Conversation {
     @Column(name = "status", nullable = false, length = 20)
     private String status = "ACTIVE";
 
-    @Column(name = "created_at", nullable = false, updatable = false)
+    @Column(name = "created_at", nullable = false, updatable = false)      //we do need to send time
     private LocalDateTime createdAt;
 
     @Column(name = "expires_at", nullable = false)
