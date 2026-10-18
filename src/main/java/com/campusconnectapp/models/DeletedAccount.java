@@ -24,8 +24,7 @@ public class DeletedAccount {
             insertable = false, updatable = false)
     private LocalDateTime deletedAt;
 
-    @Column(name = "reason", length = 500)
-    private String reason;
+
 
     // No-argument constructor
     public DeletedAccount() {
@@ -36,14 +35,14 @@ public class DeletedAccount {
             Long id,
             Long originalUserId,
             String userName,
-            String email,
-            String reason
+            String email
+
     ) {
         this.id = id;
         this.originalUserId = originalUserId;
         this.userName = userName;
         this.email = email;
-        this.reason = reason;
+
     }
 
     // Getters and setters
@@ -83,11 +82,5 @@ public class DeletedAccount {
         return deletedAt;
     }
 
-    public String getReason() {
-        return reason;
-    }
 
-    public void setReason(String reason) {
-        this.reason = reason;
-    }
 }

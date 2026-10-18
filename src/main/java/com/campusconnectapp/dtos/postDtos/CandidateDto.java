@@ -1,5 +1,6 @@
 package com.campusconnectapp.dtos.postDtos;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class CandidateDto {
 
@@ -10,6 +11,7 @@ public class CandidateDto {
     private Long locationId;
     private String locationInDetail;
     private LocalDate dateOccurred;
+    private LocalDateTime created_at;
 
     public CandidateDto() {
 
@@ -22,7 +24,8 @@ public class CandidateDto {
             Long categoryId,
             Long locationId,
             String locationInDetail,
-            LocalDate dateOccurred) {
+            LocalDate dateOccurred,
+            LocalDateTime created_at) {
 
         this.postId = postId;
         this.title = title;
@@ -31,6 +34,7 @@ public class CandidateDto {
         this.locationId = locationId;
         this.locationInDetail = locationInDetail;
         this.dateOccurred = dateOccurred;
+        this.created_at = created_at;
     }
 
     public Long getPostId() {
@@ -59,5 +63,9 @@ public class CandidateDto {
 
     public LocalDate getDateOccurred() {
         return dateOccurred;
+    }
+
+    public LocalDateTime getCreated_at() {
+        return created_at;
     }
 }

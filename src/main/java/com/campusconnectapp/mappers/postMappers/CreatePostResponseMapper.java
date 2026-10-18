@@ -21,7 +21,8 @@ public class CreatePostResponseMapper {
                         post.getCategory().getId(),
                         post.getLocation().getId(),
                         post.getLocationDetail(),
-                        post.getDateOccurred()
+                        post.getDateOccurred(),
+                        post.getCreatedAt()
                 ))
                 .toList();
 
@@ -39,7 +40,8 @@ public class CreatePostResponseMapper {
                         post.getCategory().getId(),
                         post.getLocation().getId(),
                         post.getLocationDetail(),
-                        post.getDateOccurred()
+                        post.getDateOccurred(),
+                        post.getCreatedAt()
                 ))
                 .toList();
     }
@@ -51,7 +53,8 @@ public class CreatePostResponseMapper {
                 post.getCategory().getId(),
                 post.getLocation().getId(),
                 post.getLocationDetail(),
-                post.getDateOccurred()
+                post.getDateOccurred(),
+                post.getCreatedAt()
         );
     }
 }

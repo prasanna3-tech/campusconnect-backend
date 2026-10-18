@@ -30,6 +30,7 @@ public class UserService {
     private final MatchCandidateRepository matchCandidateRepository;
     private final ConversationRepository conversationRepository;
     private final MessageRepository messageRepository;
+    private final DeletedAccountRepository deletedAccountRepository;
 
     public UserService(
             UserRepository userRepository,
@@ -41,7 +42,9 @@ public class UserService {
             PostImageRepository postImageRepository,
             MatchCandidateRepository matchCandidateRepository,
             MessageRepository messageRepository,
-            ConversationRepository conversationRepository ) {
+            ConversationRepository conversationRepository,
+            DeletedAccountRepository deletedAccountRepository
+            ) {
 
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
@@ -53,7 +56,10 @@ public class UserService {
         this.postImageRepository=postImageRepository;
         this.messageRepository=messageRepository;
         this.matchCandidateRepository=matchCandidateRepository;
+        this.deletedAccountRepository = deletedAccountRepository;
     }
+
+    //we need temporary department and role to assign users when their role or department is deleted . if we don't do this . this would cause error related to mapping and accessing .
 
     @Transactional
     public void createUser(User user, Long departmentId) {
@@ -75,7 +81,8 @@ public class UserService {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
          userRepository.save(user);
-    }
+    }//cool
+
     @Transactional(readOnly = true)
     public List<GetUserResponseDto> getAllUsers() {
 
@@ -83,7 +90,8 @@ public class UserService {
                 .stream()
                 .map(userResponseMapper::toGetUserResponseDto)
                 .toList();
-    }
+    }//cool
+
     @Transactional(readOnly = true)
     public List<GetUserResponseDto> getUsersByName(String name) {
 
@@ -91,7 +99,8 @@ public class UserService {
                 .stream()
                 .map(userResponseMapper::toGetUserResponseDto)
                 .toList();
-    }
+    }//cool
+
     @Transactional
     public void deactivateUser(Long userId) {
 
@@ -101,7 +110,8 @@ public class UserService {
         user.setIsActive(false);
 
         userRepository.save(user);
-    }
+    }//cool
+
     @Transactional
     public void activateUser(Long userId) {
 
@@ -111,7 +121,8 @@ public class UserService {
         user.setIsActive(true);
 
         userRepository.save(user);
-    }
+    }//cool
+
     @Transactional(readOnly = true)
     public GetUserResponseDto getUserByEmail(String email) {
 
@@ -121,7 +132,8 @@ public class UserService {
                 .orElseThrow(() -> new UserNotFoundException(email));
 
         return userResponseMapper.toGetUserResponseDto(user);
-    }
+    }//cool
+
     @Transactional
     public UpdateUserResponseDto updateUser(
             Long userId,
@@ -142,7 +154,8 @@ public class UserService {
         User updatedUser = userRepository.save(user);
 
         return userResponseMapper.toUpdateUserResponseDto(updatedUser);
-    }
+    }//cool
+
     @Transactional
     public void changePassword(
             Long userId,
@@ -163,50 +176,30 @@ public class UserService {
         );
 
         userRepository.save(user);
-    }
+    }//cool
+
     @Transactional
     public void deleteUser(Long userId) {
 
+        // Step 1: Find the user
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException(userId));
 
-        //posts created by the user
-        List<LostFoundPost> posts =
-                lostFoundPostRepository.findByUserId(userId);
+        // Step 2: Retrieve the user's details
+        Long originalUserId = user.getId();
+        String userName = user.getName();
+        String email = user.getEmail();
 
-        List<Long> postIds = posts.stream()
-                .map(LostFoundPost::getId)//post -> post.getId()
-                .toList();
-
-        List<Conversation> conversations =
-                conversationRepository
-                        .findByMatchCandidateLostPostIdInOrMatchCandidateFoundPostIdIn(
-                                postIds, postIds
-                        );
-        List<Long> conversationIds = conversations.stream()
-                .map(Conversation::getId)
-                .toList();
-
-        if (!conversationIds.isEmpty()) {
-            messageRepository.deleteByConversationIdIn(conversationIds);
-            conversationRepository.deleteAllByIdInBatch(conversationIds);
-        }
-
-        if (!postIds.isEmpty()) {
-            matchCandidateRepository.deleteByLostPostIdInOrFoundPostIdIn(
-                    postIds,
-                    postIds
-            );
-        }
-        if (!postIds.isEmpty()) {
-            postImageRepository.deleteByPostIdIn(postIds);
-        }
-
-        if (!postIds.isEmpty()) {
-            lostFoundPostRepository.deleteByUserId(userId);
-        }
-
+        // Step 3: Delete the user
         userRepository.delete(user);
 
+        // Step 4: Create the DeletedAccount object
+        DeletedAccount deletedAccount = new DeletedAccount();
+        deletedAccount.setOriginalUserId(originalUserId);
+        deletedAccount.setUserName(userName);
+        deletedAccount.setEmail(email);
+
+        // Step 5: Save the deleted account record
+        deletedAccountRepository.save(deletedAccount);
     }
 }

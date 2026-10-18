@@ -50,7 +50,7 @@ public class PostController {
     }
     @GetMapping("/all")
     public ResponseEntity<List<CandidateDto>> getAllPosts(
-            @RequestParam int postType) {
+            @RequestParam String postType) {
 
         List<LostFoundPost> posts =
                 lostFoundPostService.getAllPosts(postType);

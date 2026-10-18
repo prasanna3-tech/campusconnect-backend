@@ -31,9 +31,6 @@ public class PostService
     private final CategoryRepository categoryRepository;
     private final LocationRepository locationRepository;
 
-
-
-
     public PostService(
             LostFoundPostRepository lostFoundPostRepository,
             UserRepository userRepository,
@@ -73,21 +70,21 @@ public class PostService
                 matchingPosts
         );
     }
-    public List<LostFoundPost> getAllPosts(int postType) {
+    public List<LostFoundPost> getAllPosts(String postType) {
 
         String type;
 
-        if (postType == 1) {
+        if (postType.equals("LOST")) {
             type = "LOST";
-        }else if(postType == 2){
+        }else if(postType.equals("FOUND")){
             type = "FOUND";
         }else {
             throw new InvalidPostTypeException(
-                    "Invalid post type. Use 1 for LOST or 2 for FOUND."
+                    "Invalid post type. Use 'LOST' for LOST POSTS or 'FOUND' for FOUND POSTS."
             );
         }
 
-        return lostFoundPostRepository.findAllByPostType(type);
+        return lostFoundPostRepository.findAllByPostTypeOrderByCreatedAtDesc(type);
     }
 
     public CandidateDto updatePost(

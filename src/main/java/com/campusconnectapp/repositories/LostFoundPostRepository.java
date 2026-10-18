@@ -22,4 +22,5 @@ public interface LostFoundPostRepository
             LocalDate endDate
     );
     List<LostFoundPost> findAllByPostType(String postType);
+    List<LostFoundPost> findAllByPostTypeOrderByCreatedAtDesc(String postType);
 }
