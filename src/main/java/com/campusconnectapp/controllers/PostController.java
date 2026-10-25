@@ -68,4 +68,9 @@ public class PostController {
 
         return ResponseEntity.ok(response);
     }
+    @DeleteMapping("/delete-expired")
+    public ResponseEntity<String> deletePosts() {
+        lostFoundPostService.deletePosts();
+        return ResponseEntity.ok("Post deletion process completed successfully.");
+    }
 }

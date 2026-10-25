@@ -7,16 +7,17 @@ import com.campusconnectapp.exceptions.postExceptions.InvalidPostTypeException;
 import com.campusconnectapp.exceptions.postExceptions.LocationNotFoundException;
 import com.campusconnectapp.exceptions.postExceptions.PostNotFoundException;
 import com.campusconnectapp.mappers.postMappers.CreatePostResponseMapper;
+import com.campusconnectapp.models.MatchCandidate;
 import com.campusconnectapp.models.User;
 import com.campusconnectapp.models.LostFoundPost;
 import com.campusconnectapp.dtos.postDtos.CreatePostRequestDto;
 import com.campusconnectapp.mappers.postMappers.PostRequestMapper;
-import com.campusconnectapp.repositories.CategoryRepository;
-import com.campusconnectapp.repositories.LocationRepository;
-import com.campusconnectapp.repositories.UserRepository;
-import com.campusconnectapp.repositories.LostFoundPostRepository;
+import com.campusconnectapp.repositories.*;
 import com.campusconnectapp.exceptions.userExceptions.UserNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -30,6 +31,8 @@ public class PostService
 
     private final CategoryRepository categoryRepository;
     private final LocationRepository locationRepository;
+    private final MatchCandidateRepository matchCandidateRepository;
+    private final ConversationRepository conversationRepository;
 
     public PostService(
             LostFoundPostRepository lostFoundPostRepository,
@@ -39,7 +42,9 @@ public class PostService
             CreatePostResponseMapper createPostResponseMapper,
 
             CategoryRepository categoryRepository,
-            LocationRepository locationRepositor
+            LocationRepository locationRepositor,
+            MatchCandidateRepository matchCandidateRepository,
+            ConversationRepository conversationRepository
     ) {
         this.lostFoundPostRepository = lostFoundPostRepository;
         this.userRepository = userRepository;
@@ -49,6 +54,8 @@ public class PostService
 
         this.locationRepository=locationRepositor;
         this.categoryRepository=categoryRepository;
+        this.matchCandidateRepository = matchCandidateRepository;
+        this.conversationRepository = conversationRepository;
     }
 
     public CreatePostResponse createPost(Long userId, CreatePostRequestDto dto) {
@@ -122,5 +129,72 @@ public class PostService
         LostFoundPost updatedPost = lostFoundPostRepository.save(post);
 
         return createPostResponseMapper.toCandidateDto(updatedPost);
+    }
+
+    @Transactional
+    public void deletePosts() {
+        LocalDateTime sixMonthsAgo = LocalDateTime.now().minusMonths(6);
+        LocalDateTime oneMonthAgo = LocalDateTime.now().minusMonths(1);
+
+        List<LostFoundPost> posts = lostFoundPostRepository.findAll();
+
+        for (LostFoundPost post : posts) {
+
+            // Rule 1: Delete CLOSED posts immediately
+            if ("CLOSED".equals(post.getStatus())) {
+                lostFoundPostRepository.deletePostDirectly(post.getId());
+                continue;
+            }
+
+            boolean hasActiveConversation =
+                    conversationRepository
+                            .existsByLostPostIdAndStatusOrFoundPostIdAndStatus(
+                                    post.getId(), "ACTIVE",
+                                    post.getId(), "ACTIVE"
+                            );
+
+            // Rule 4: Keep posts involved in active conversations
+            if (hasActiveConversation) {
+                continue;
+            }
+
+            boolean hasCandidateMatch =
+                    matchCandidateRepository.existsByLostPostIdOrFoundPostId(
+                            post.getId(), post.getId());
+
+            // Rule 2: No conversation or candidate match; use post creation time
+            if (!hasCandidateMatch) {
+                if (post.getCreatedAt().isBefore(sixMonthsAgo)) {
+                    lostFoundPostRepository.deletePostDirectly(post.getId());
+                }
+                continue;
+            }
+
+            // Rule 3: Check INITIAL candidate matches
+            List<MatchCandidate> candidates =
+                    matchCandidateRepository
+                            .findByLostPostIdOrFoundPostId(
+                                    post.getId(), post.getId());
+
+            //candidate matches with any other state cannot come here , it is just useless .
+
+            // if any candidate match was created within a month then we should not delete the post .
+            boolean flag = false;
+            for (MatchCandidate candidate : candidates) {
+                if ("INITIAL".equals(candidate.getStatus())
+                        && candidate.getCreatedAt().isAfter(oneMonthAgo)) {
+                    flag = true;
+                    break;
+                }
+            }
+            if(flag){
+                flag=false;
+                continue;
+            }
+            //we can delete if no candidate match was created a month ago .
+            lostFoundPostRepository.deletePostDirectly(post.getId());
+            // if a post is involved in a convo ,which is inactive or the candidate_match which is (accepted or rejected ), doesn't
+            // need to be handled because in that cases the post's status is closed .
+        }
     }
 }

@@ -14,4 +14,12 @@ public interface MatchCandidateRepository
             List<Long> lostPostIds,
             List<Long> foundPostIds
     );
+    boolean existsByLostPostIdOrFoundPostId(
+            Long lostPostId,
+            Long foundPostId
+    );
+    List<MatchCandidate> findByLostPostIdOrFoundPostId(
+            Long lostPostId,
+            Long foundPostId
+    );
 }

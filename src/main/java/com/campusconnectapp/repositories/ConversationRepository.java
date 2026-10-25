@@ -16,5 +16,12 @@ public interface ConversationRepository extends JpaRepository<Conversation, Long
             List<Long> foundPostIds
     );
 
+    boolean existsByLostPostIdAndStatusOrFoundPostIdAndStatus(
+            Long lostPostId,
+            String lostPostStatus,
+            Long foundPostId,
+            String foundPostStatus
+    );
+
 
 }

@@ -2,6 +2,9 @@ package com.campusconnectapp.repositories;
 
 import com.campusconnectapp.models.LostFoundPost;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
@@ -23,4 +26,8 @@ public interface LostFoundPostRepository
     );
     List<LostFoundPost> findAllByPostType(String postType);
     List<LostFoundPost> findAllByPostTypeOrderByCreatedAtDesc(String postType);
+    @Modifying
+    @Query(value = "DELETE FROM lost_found_posts WHERE id = :postId",
+            nativeQuery = true)
+    void deletePostDirectly(@Param("postId") Long postId);
 }

@@ -38,6 +38,14 @@ public class MatchCandidate {
     @OneToOne(mappedBy = "matchCandidate")
     private Conversation conversation;
 
+    @Column(
+            name = "created_at",
+            nullable = false,
+            insertable = false, //This tells Hibernate not to include this field in SQL INSERT statements.
+            updatable = false //This tells Hibernate not to include this field in SQL UPDATE statements.
+    )
+    private LocalDateTime createdAt;
+
 
     // No-argument constructor
     public MatchCandidate() {
@@ -103,5 +111,9 @@ public class MatchCandidate {
     }
     public void setConversation(Conversation conversation) {
         this.conversation = conversation;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
     }
 }
