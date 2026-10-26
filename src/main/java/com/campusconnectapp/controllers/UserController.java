@@ -44,11 +44,19 @@ public class UserController {
                 .status(HttpStatus.CREATED)
                 .body("User created successfully");
     }
+
     @GetMapping
     public ResponseEntity<List<GetUserResponseDto>> getAllUsers() {
 
         return ResponseEntity.ok(userService.getAllUsers());
     }
+
+    @GetMapping("/{userId}")
+    public ResponseEntity<GetUserResponseDto> getUser(@PathVariable Long userId) {
+        GetUserResponseDto response = userService.getUser(userId);
+        return ResponseEntity.ok(response);
+    }
+
     @GetMapping("/search")
     public ResponseEntity<List<GetUserResponseDto>> getUsersByName(
             @RequestParam
@@ -57,6 +65,7 @@ public class UserController {
 
         return ResponseEntity.ok(userService.getUsersByName(name));
     }
+
     @PatchMapping("/{userId}/deactivate")
     public ResponseEntity<String> deactivateUser(
             @PathVariable Long userId) {
@@ -65,6 +74,7 @@ public class UserController {
 
         return ResponseEntity.ok("User deactivated successfully");
     }
+
     @PatchMapping("/{userId}/activate")
     public ResponseEntity<String> activateUser(
             @PathVariable Long userId) {
@@ -73,6 +83,7 @@ public class UserController {
 
         return ResponseEntity.ok("User activated successfully");
     }
+
     @GetMapping("/email")
     public ResponseEntity<GetUserResponseDto> getUserByEmail(
             @RequestParam
@@ -82,6 +93,7 @@ public class UserController {
 
         return ResponseEntity.ok(userService.getUserByEmail(email));
     }
+
     @PutMapping("/me")
     public ResponseEntity<UpdateUserResponseDto> updateUser(
             @Valid @RequestBody UpdateUserRequestDto request,
@@ -95,6 +107,7 @@ public class UserController {
 
         return ResponseEntity.ok(response);
     }
+
     @PatchMapping("me/change-password")
     public ResponseEntity<String> changePassword(
             @Valid @RequestBody ChangePasswordRequestDto request,
@@ -110,6 +123,7 @@ public class UserController {
 
         return ResponseEntity.ok("Password updated successfully");
     }
+
     @DeleteMapping("/{userId}")
     public ResponseEntity<String> deleteUser(@PathVariable Long userId) {
 
@@ -117,4 +131,5 @@ public class UserController {
 
         return ResponseEntity.ok("User deleted successfully");
     }
+
 }

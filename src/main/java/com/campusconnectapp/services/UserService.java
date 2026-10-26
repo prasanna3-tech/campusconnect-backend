@@ -101,6 +101,13 @@ public class UserService {
                 .toList();
     }//cool
 
+    public GetUserResponseDto getUser(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException(userId));
+
+        return userResponseMapper.toGetUserResponseDto(user);
+    }
+
     @Transactional
     public void deactivateUser(Long userId) {
 

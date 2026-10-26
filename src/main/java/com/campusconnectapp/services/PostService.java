@@ -77,9 +77,14 @@ public class PostService
                 matchingPosts
         );
     }
-    public List<LostFoundPost> getAllPosts(String postType) {
+    public List<LostFoundPost> getAllPosts(String postType,String status) {
 
         String type;
+
+        if (!status.equals("OPEN") && !status.equals("CLOSED")) {
+            throw new IllegalArgumentException(
+                    "Status must be either OPEN or CLOSED");
+        }
 
         if (postType.equals("LOST")) {
             type = "LOST";
@@ -91,7 +96,8 @@ public class PostService
             );
         }
 
-        return lostFoundPostRepository.findAllByPostTypeOrderByCreatedAtDesc(type);
+        return lostFoundPostRepository
+                .findAllByPostTypeAndStatusOrderByCreatedAtDesc(type, status);
     }
 
     public CandidateDto updatePost(
@@ -188,7 +194,6 @@ public class PostService
                 }
             }
             if(flag){
-                flag=false;
                 continue;
             }
             //we can delete if no candidate match was created a month ago .
@@ -197,4 +202,22 @@ public class PostService
             // need to be handled because in that cases the post's status is closed .
         }
     }
+    @Transactional
+    public void deletePost(Long postId) {
+        LostFoundPost post = lostFoundPostRepository.findById(postId)
+                .orElseThrow(() -> new PostNotFoundException("Post not found with ID: " +postId));
+
+        lostFoundPostRepository.delete(post);
+    }
+
+    @Transactional
+    public void closePost(Long postId) {
+        LostFoundPost post = lostFoundPostRepository.findById(postId)
+                .orElseThrow(() -> new PostNotFoundException("Post not found with ID: " +postId));
+
+        post.setStatus("CLOSED");
+
+        lostFoundPostRepository.save(post);
+    }
+
 }

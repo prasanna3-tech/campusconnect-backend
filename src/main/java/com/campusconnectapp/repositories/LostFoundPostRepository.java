@@ -25,7 +25,14 @@ public interface LostFoundPostRepository
             LocalDate endDate
     );
     List<LostFoundPost> findAllByPostType(String postType);
+
     List<LostFoundPost> findAllByPostTypeOrderByCreatedAtDesc(String postType);
+
+    List<LostFoundPost> findAllByPostTypeAndStatusOrderByCreatedAtDesc(
+            String postType,
+            String status
+    );
+
     @Modifying
     @Query(value = "DELETE FROM lost_found_posts WHERE id = :postId",
             nativeQuery = true)

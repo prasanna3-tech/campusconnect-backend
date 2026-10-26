@@ -50,10 +50,11 @@ public class PostController {
     }
     @GetMapping("/all")
     public ResponseEntity<List<CandidateDto>> getAllPosts(
-            @RequestParam String postType) {
+            @RequestParam String postType,
+            @RequestParam String status) {
 
         List<LostFoundPost> posts =
-                lostFoundPostService.getAllPosts(postType);
+                lostFoundPostService.getAllPosts(postType, status);
 
         List<CandidateDto> response =
                 createPostResponseMapper.toCandidateDtos(posts);
@@ -71,6 +72,11 @@ public class PostController {
     @DeleteMapping("/delete-expired")
     public ResponseEntity<String> deletePosts() {
         lostFoundPostService.deletePosts();
+        return ResponseEntity.ok("Post deletion process completed successfully.");
+    }
+    @DeleteMapping("/{postId}")
+    public ResponseEntity<String> deletePost(@PathVariable Long postId) {
+        lostFoundPostService.deletePost(postId);
         return ResponseEntity.ok("Post deletion process completed successfully.");
     }
 }
