@@ -22,4 +22,11 @@ public interface MatchCandidateRepository
             Long lostPostId,
             Long foundPostId
     );
+
+    List<MatchCandidate> findByLostPostIdAndStatusOrFoundPostIdAndStatus(
+            Long lostPostId,
+            String lostStatus,
+            Long foundPostId,
+            String foundStatus
+    );
 }
