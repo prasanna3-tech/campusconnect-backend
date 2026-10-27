@@ -48,6 +48,7 @@ public class PostController {
                 .status(HttpStatus.CREATED)
                 .body(response);
     }
+
     @GetMapping("/all")
     public ResponseEntity<List<CandidateDto>> getAllPosts(
             @RequestParam String postType,

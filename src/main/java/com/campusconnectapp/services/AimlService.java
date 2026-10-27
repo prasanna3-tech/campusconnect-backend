@@ -1,10 +1,11 @@
 package com.campusconnectapp.services;
 import com.campusconnectapp.dtos.aimlDtos.*;
+import com.campusconnectapp.dtos.postDtos.MatchingPostsResponseDto;
+import com.campusconnectapp.mappers.postMappers.MatchingPostsResponseMapper;
 import com.campusconnectapp.models.LostFoundPost;
 import com.campusconnectapp.models.MatchCandidate;
 import com.campusconnectapp.repositories.LostFoundPostRepository;
 import com.campusconnectapp.repositories.MatchCandidateRepository;
-import com.campusconnectapp.utils.ObjectCreationUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 import java.util.List;
@@ -15,30 +16,36 @@ import java.util.ArrayList;
 public class AimlService {
 
     private final LostFoundPostRepository lostFoundPostRepository;
-    private final ObjectCreationUtil objectCreationUtil;
+    private final MatchCandidateService matchCandidateService;
     private final MatchCandidateRepository matchCandidateRepository;
+    private final MatchingPostsResponseMapper matchingPostsResponseMapper;
 
     private final RestClient aiRestClient;
 
     public AimlService(
             LostFoundPostRepository lostFoundPostRepository,
-            ObjectCreationUtil objectCreationUtil,
+            MatchCandidateService matchCandidateService,
             MatchCandidateRepository matchCandidateRepository,
-            RestClient aiRestClient) {
+            RestClient aiRestClient,
+            MatchingPostsResponseMapper matchingPostsResponseMapper) {
 
         this.lostFoundPostRepository = lostFoundPostRepository;
         this.aiRestClient = aiRestClient;
-        this.objectCreationUtil = objectCreationUtil;
+        this.matchCandidateService = matchCandidateService;
         this.matchCandidateRepository = matchCandidateRepository;
+        this.matchingPostsResponseMapper = matchingPostsResponseMapper;
     }
 
-    public List<LostFoundPost> findMatchingPosts(LostFoundPost post) {
+    public MatchingPostsResponseDto findMatchingPosts(LostFoundPost post) {
+
+        List<LostFoundPost> matchingPosts = new ArrayList<>();
+        List<Double> scores = new ArrayList<>();
 
         // 1. Retrieve eligible candidate posts
         List<LostFoundPost> candidates = retrieveCandidates(post);
 
         if (candidates.isEmpty()) {
-            return candidates;
+            return matchingPostsResponseMapper.toDto(matchingPosts,scores);
         }
 
         // 2. Create one text pair per candidate
@@ -50,13 +57,16 @@ public class AimlService {
         List<AiPrediction> predictions = response.getPredictions();
 
         // 4. Keep candidates that pass the threshold
-        List<LostFoundPost> matchingPosts = new ArrayList<>();
+
+
 
         double threshold = 0.2; // Example only; replace with your chosen threshold
 
         for (int i = 0; i < candidates.size(); i++) {
             if (predictions.get(i).getScore() >= threshold) {
+
                 matchingPosts.add(candidates.get(i));
+                scores.add(predictions.get(i).getScore());
 
                 LostFoundPost lostPost;
                 LostFoundPost foundPost;
@@ -70,7 +80,7 @@ public class AimlService {
                 }
 
                 MatchCandidate matchCandidate =
-                        objectCreationUtil.createMatchCandidate(
+                        matchCandidateService.createMatchCandidate(
                                 lostPost,
                                 foundPost,
                                 predictions.get(i).getScore()
@@ -80,7 +90,7 @@ public class AimlService {
             }
         }
 
-        return matchingPosts;
+        return matchingPostsResponseMapper.toDto(matchingPosts,scores);
     }
 
     public AiPredictionResponse getPredictions(List<TextPair> pairs) {

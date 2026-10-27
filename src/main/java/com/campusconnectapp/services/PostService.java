@@ -1,7 +1,5 @@
 package com.campusconnectapp.services;
-import com.campusconnectapp.dtos.postDtos.CandidateDto;
-import com.campusconnectapp.dtos.postDtos.CreatePostResponse;
-import com.campusconnectapp.dtos.postDtos.UpdatePostRequestDto;
+import com.campusconnectapp.dtos.postDtos.*;
 import com.campusconnectapp.exceptions.postExceptions.CategoryNotFoundException;
 import com.campusconnectapp.exceptions.postExceptions.InvalidPostTypeException;
 import com.campusconnectapp.exceptions.postExceptions.LocationNotFoundException;
@@ -10,7 +8,6 @@ import com.campusconnectapp.mappers.postMappers.CreatePostResponseMapper;
 import com.campusconnectapp.models.MatchCandidate;
 import com.campusconnectapp.models.User;
 import com.campusconnectapp.models.LostFoundPost;
-import com.campusconnectapp.dtos.postDtos.CreatePostRequestDto;
 import com.campusconnectapp.mappers.postMappers.PostRequestMapper;
 import com.campusconnectapp.repositories.*;
 import com.campusconnectapp.exceptions.userExceptions.UserNotFoundException;
@@ -69,7 +66,7 @@ public class PostService
         post.setStatus("OPEN");
         LostFoundPost savedPost = lostFoundPostRepository.save(post);
 
-        List<LostFoundPost> matchingPosts =
+        MatchingPostsResponseDto matchingPosts =
                 aimlService.findMatchingPosts(savedPost);
 
         return createPostResponseMapper.toDto(

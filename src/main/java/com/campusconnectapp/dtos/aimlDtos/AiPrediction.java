@@ -6,6 +6,7 @@ public class AiPrediction {
     private String text1;
     private String text2;
     private double score;
+    //add postId so that we can know which post's AiPrediction this is .
 
     public AiPrediction() {
     }
@@ -34,3 +35,5 @@ public class AiPrediction {
         this.score = score;
     }
 }
+
+//add postId so that we can know which post's AiPrediction this is .

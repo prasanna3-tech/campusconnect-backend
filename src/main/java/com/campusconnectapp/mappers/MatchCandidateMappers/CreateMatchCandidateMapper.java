@@ -1,13 +1,13 @@
-package com.campusconnectapp.utils;
+package com.campusconnectapp.mappers.MatchCandidateMappers;
 
 import com.campusconnectapp.models.LostFoundPost;
 import com.campusconnectapp.models.MatchCandidate;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 
-@Service
-public class ObjectCreationUtil {
+@Component
+public class CreateMatchCandidateMapper {
     public MatchCandidate createMatchCandidate(
             LostFoundPost lostPost,
             LostFoundPost foundPost,

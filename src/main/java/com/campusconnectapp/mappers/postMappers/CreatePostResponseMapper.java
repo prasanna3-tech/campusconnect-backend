@@ -1,6 +1,7 @@
 package com.campusconnectapp.mappers.postMappers;
 import com.campusconnectapp.dtos.postDtos.CandidateDto;
 import com.campusconnectapp.dtos.postDtos.CreatePostResponse;
+import com.campusconnectapp.dtos.postDtos.MatchingPostsResponseDto;
 import com.campusconnectapp.models.LostFoundPost;
 import org.springframework.stereotype.Component;
 
@@ -11,9 +12,9 @@ public class CreatePostResponseMapper {
 
     public CreatePostResponse toDto(
             Long postId,
-            List<LostFoundPost> matchingPosts) {
+            MatchingPostsResponseDto matchingPosts) {
 
-        List<CandidateDto> candidateDtos = matchingPosts.stream()
+        List<CandidateDto> candidateDtos = matchingPosts.getLostFoundPosts().stream()
                 .map(post -> new CandidateDto(
                         post.getId(),
                         post.getTitle(),
@@ -26,7 +27,7 @@ public class CreatePostResponseMapper {
                 ))
                 .toList();
 
-        return new CreatePostResponse(postId, candidateDtos);
+        return new CreatePostResponse(postId, candidateDtos,matchingPosts.getScores());
     }
 
     public List<CandidateDto> toCandidateDtos(

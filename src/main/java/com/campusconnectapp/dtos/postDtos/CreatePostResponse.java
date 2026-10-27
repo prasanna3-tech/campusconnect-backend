@@ -5,16 +5,19 @@ public class CreatePostResponse {
 
     private Long postId;
     private List<CandidateDto> matchingPosts;
+    private List<Double> scores;
 
     public CreatePostResponse() {
     }
 
     public CreatePostResponse(
             Long postId,
-            List<CandidateDto> matchingPosts) {
+            List<CandidateDto> matchingPosts,
+            List<Double> scores ) {
 
         this.postId = postId;
         this.matchingPosts = matchingPosts;
+        this.scores = scores;
     }
 
     public Long getPostId() {
@@ -23,5 +26,9 @@ public class CreatePostResponse {
 
     public List<CandidateDto> getMatchingPosts() {
         return matchingPosts;
+    }
+
+    public List<Double> getScores() {
+        return scores;
     }
 }
